@@ -2,11 +2,13 @@ package api
 
 import (
 	"context"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"mxshop-api/user-web/global"
 	"mxshop-api/user-web/global/response"
 	"mxshop-api/user-web/proto"
 	"net/http"
@@ -47,9 +49,11 @@ func HandleGrpcErrorToHttp(err error,c *gin.Context){
 }
 
 func GetUserList(ctx *gin.Context){
+	host := global.ServerConfig.UserSrvInfo.Host
+	port := global.ServerConfig.UserSrvInfo.Port
 	var err error
 	//拨号连接用户grpc服务
-	conn,err = grpc.Dial("127.0.0.1:50051",grpc.WithInsecure())
+	conn,err = grpc.Dial(fmt.Sprintf("%s:%d",host,port),grpc.WithInsecure())
 	if err != nil{
 		zap.S().Error("[GetUserList]连接[用户服务失败]","msg",err.Error())
 	}
